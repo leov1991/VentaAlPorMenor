@@ -1,8 +1,10 @@
 using Swashbuckle.Application;
 using System.Web.Http;
+using VPMDataManager;
 using VPMDataManager.App_Start;
+using WebActivatorEx;
 
-//[assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
+[assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
 
 namespace VPMDataManager
 {
