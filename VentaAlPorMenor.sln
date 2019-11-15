@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VPMDataManager", "VPMDataMa
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "VPMData", "VPMData\VPMData.sqlproj", "{270835E8-D26A-4F0E-AA54-34949E52F145}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VPMDesktopUI", "VPMDesktopUserInterface\VPMDesktopUI.csproj", "{5F4B2202-858D-4F78-9960-E0B17274E988}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +25,10 @@ Global
 		{270835E8-D26A-4F0E-AA54-34949E52F145}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{270835E8-D26A-4F0E-AA54-34949E52F145}.Release|Any CPU.Build.0 = Release|Any CPU
 		{270835E8-D26A-4F0E-AA54-34949E52F145}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{5F4B2202-858D-4F78-9960-E0B17274E988}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F4B2202-858D-4F78-9960-E0B17274E988}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F4B2202-858D-4F78-9960-E0B17274E988}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F4B2202-858D-4F78-9960-E0B17274E988}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
