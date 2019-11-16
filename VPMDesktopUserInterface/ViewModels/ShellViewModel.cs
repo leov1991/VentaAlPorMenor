@@ -7,17 +7,18 @@ namespace VPMDesktopUI.ViewModels
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly SalesViewModel _salesVm;
-        private readonly SimpleContainer _container;
 
-        public ShellViewModel(IEventAggregator eventAggregator, SalesViewModel salesVm, SimpleContainer container)
+
+        public ShellViewModel(IEventAggregator eventAggregator, SalesViewModel salesVm)
         {
             _salesVm = salesVm;
-            _container = container;
             _eventAggregator = eventAggregator;
 
             // Para poder usar Handle
             _eventAggregator.Subscribe(this);
-            ActivateItem(_container.GetInstance<LoginViewModel>());
+
+            // Iniciar pantalla de Login
+            ActivateItem(IoC.Get<LoginViewModel>());
         }
 
         /// <summary>
