@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using VPMDesktopUI.Helpers;
 using VPMDesktopUI.Library.API;
+using VPMDesktopUI.Library.Helpers;
 using VPMDesktopUI.Library.Models;
 using VPMDesktopUI.ViewModels;
 
@@ -35,6 +36,7 @@ namespace VPMDesktopUI
                 .Singleton<IWindowManager, WindowManager>()
                 .Singleton<IEventAggregator, EventAggregator>()
                 .Singleton<IAPIHelper, APIHelper>()
+                .Singleton<IConfigHelper, ConfigHelper>()
                 .Singleton<ILoggedInUserModel, LoggedInUserModel>();
 
 
