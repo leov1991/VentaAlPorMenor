@@ -88,14 +88,9 @@ namespace VPMDesktopUI.ViewModels
             decimal taxAmount = 0;
             decimal taxRate = _configHelper.GetTaxRate() / 100;
 
-            foreach (var item in Cart)
-            {
+            taxAmount = Cart.Where(i => i.Product.IsTaxable)
+                .Sum(i => i.Product.RetailPrice * i.QuantityInCart * taxRate);
 
-                if (item.Product.IsTaxable)
-                {
-                    taxAmount += item.Product.RetailPrice * item.QuantityInCart * taxRate;
-                }
-            }
 
             return taxAmount;
         }
@@ -173,7 +168,7 @@ namespace VPMDesktopUI.ViewModels
             }
 
             SelectedProduct.QuantityInStock -= ItemQuantity;
-            ItemQuantity = 1;            
+            ItemQuantity = 1;
             NotifyOfPropertyChange(() => Subtotal);
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
