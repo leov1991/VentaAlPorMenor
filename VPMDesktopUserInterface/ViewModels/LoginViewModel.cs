@@ -9,6 +9,7 @@ namespace VPMDesktopUI.ViewModels
     {
         private string _username;
         private string _password;
+        private string _errorMessage;
         private readonly IAPIHelper _apiHelper;
 
         public string Username
@@ -36,6 +37,20 @@ namespace VPMDesktopUI.ViewModels
 
         public bool CanLogin => !string.IsNullOrEmpty(Username) && !string.IsNullOrEmpty(Password);
 
+        public bool IsErrorVisible => !string.IsNullOrEmpty(ErrorMessage);
+
+        public string ErrorMessage
+        {
+            get { return _errorMessage; }
+            set
+            {
+                _errorMessage = value;
+                NotifyOfPropertyChange(() => ErrorMessage);
+                NotifyOfPropertyChange(() => IsErrorVisible);
+            }
+        }
+
+
 
         public LoginViewModel(IAPIHelper apiHelper)
         {
@@ -46,11 +61,13 @@ namespace VPMDesktopUI.ViewModels
         {
             try
             {
+                ErrorMessage = string.Empty;
                 var result = await _apiHelper.Authenticate(Username, Password);
+
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                ErrorMessage = ex.Message;
             }
 
         }

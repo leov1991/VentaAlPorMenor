@@ -20,6 +20,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
@@ -28,37 +29,51 @@
                    Grid.ColumnSpan="2"
                    Margin="0 0 0 20"
                    HorizontalAlignment="Center"
-                   Text="IDENTIFICACIÓN"
+                   Text="Autenticación"
                    FontSize="48" 
                    FontFamily="Segoe UI Light"
                    />
         
-        <!-- Username row -->
+        <!-- Error message row -->
         <TextBlock Grid.Row="1"
                    Grid.Column="1"
+                   Grid.ColumnSpan="2"
+                   Foreground="Red"                   
+                   x:Name="ErrorMessage"
+                   TextWrapping="Wrap"
+                   Margin="0 0 0 20"
+                   Visibility="{Binding IsErrorVisible,
+                    Converter={StaticResource BooleanToVisibilityConverter},
+                    FallbackValue=Collapsed}"
+                   MaxWidth="300"
+                   />
+
+        <!-- Username row -->        
+        <TextBlock Grid.Row="2"
+                   Grid.Column="1"
                    Text="Usuario:"
-                   Margin="0 0 0 10"/>
+                   Margin="0 0 5 10"/>
         <TextBox x:Name="Username"
-                 Grid.Row="1"
+                 Grid.Row="2"
                  Grid.Column="2"
-                 MinWidth="150"
+                 MinWidth="350"
                  Margin="0 0 0 20"
                  />
 
         <!-- Password row -->
-        <TextBlock Grid.Row="2"
+        <TextBlock Grid.Row="3"
                    Grid.Column="1"
                    Text="Contraseña:"
-                   Margin="0 0 0 10"/>
+                   Margin="0 0 5 10"/>
         <PasswordBox x:Name="Password"
-                 Grid.Row="2"
+                 Grid.Row="3"
                  Grid.Column="2"
-                 MinWidth="150"
+                 MinWidth="350"
                  Margin="0 0 0 20"
                  />
         
         <!-- Login row -->
-        <Button Grid.Row="3"
+        <Button Grid.Row="4"
                 Grid.Column="1"
                 Grid.ColumnSpan="2"
                 HorizontalAlignment="Center"
