@@ -1,7 +1,7 @@
 ﻿using Caliburn.Micro;
 using System;
 using System.Threading.Tasks;
-using VPMDesktopUI.Helpers;
+using VPMDesktopUI.Library.API;
 
 namespace VPMDesktopUI.ViewModels
 {
@@ -63,6 +63,7 @@ namespace VPMDesktopUI.ViewModels
             {
                 ErrorMessage = string.Empty;
                 var result = await _apiHelper.Authenticate(Username, Password);
+                await _apiHelper.GetLoggedInUserInfo(result.Access_Token);
 
             }
             catch (Exception ex)

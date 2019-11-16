@@ -5,6 +5,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using VPMDesktopUI.Helpers;
+using VPMDesktopUI.Library.API;
+using VPMDesktopUI.Library.Models;
 using VPMDesktopUI.ViewModels;
 
 namespace VPMDesktopUI
@@ -16,7 +18,7 @@ namespace VPMDesktopUI
         public Bootstrapper()
         {
             Initialize();
-            
+
             ConventionManager.AddElementConvention<PasswordBox>(
             PasswordBoxHelper.BoundPasswordProperty,
             "Password",
@@ -31,7 +33,9 @@ namespace VPMDesktopUI
             _container
                 .Singleton<IWindowManager, WindowManager>()
                 .Singleton<IEventAggregator, EventAggregator>()
-                .Singleton<IAPIHelper, APIHelper>();
+                .Singleton<IAPIHelper, APIHelper>()
+                .Singleton<ILoggedInUserModel, LoggedInUserModel>();
+
 
 
             // Registrar todos los viewmodels
