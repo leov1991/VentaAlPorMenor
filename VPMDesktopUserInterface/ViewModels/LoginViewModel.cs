@@ -1,6 +1,7 @@
 ﻿using Caliburn.Micro;
 using System;
 using System.Threading.Tasks;
+using VPMDesktopUI.EventModels;
 using VPMDesktopUI.Library.API;
 
 namespace VPMDesktopUI.ViewModels
@@ -11,6 +12,7 @@ namespace VPMDesktopUI.ViewModels
         private string _password;
         private string _errorMessage;
         private readonly IAPIHelper _apiHelper;
+        private readonly IEventAggregator _eventAggregator;
 
         public string Username
         {
@@ -52,9 +54,10 @@ namespace VPMDesktopUI.ViewModels
 
 
 
-        public LoginViewModel(IAPIHelper apiHelper)
+        public LoginViewModel(IAPIHelper apiHelper, IEventAggregator eventAggregator)
         {
             _apiHelper = apiHelper;
+            _eventAggregator = eventAggregator;
         }
 
         public async Task Login()
@@ -64,6 +67,8 @@ namespace VPMDesktopUI.ViewModels
                 ErrorMessage = string.Empty;
                 var result = await _apiHelper.Authenticate(Username, Password);
                 await _apiHelper.GetLoggedInUserInfo(result.Access_Token);
+
+                _eventAggregator.PublishOnUIThread(new LogOnEvent());
 
             }
             catch (Exception ex)
