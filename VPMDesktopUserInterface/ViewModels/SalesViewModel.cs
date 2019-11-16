@@ -130,11 +130,8 @@ namespace VPMDesktopUI.ViewModels
         private decimal CalculateSubtotal()
         {
             decimal subtotal = 0;
-            foreach (var item in Cart)
-            {
 
-                subtotal += item.Product.RetailPrice * item.QuantityInCart;
-            }
+            subtotal = Cart.Sum(i => i.Product.RetailPrice * i.QuantityInCart);
 
             return subtotal;
         }
