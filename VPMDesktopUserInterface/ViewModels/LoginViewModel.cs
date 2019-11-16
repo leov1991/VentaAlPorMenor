@@ -52,8 +52,6 @@ namespace VPMDesktopUI.ViewModels
             }
         }
 
-
-
         public LoginViewModel(IAPIHelper apiHelper, IEventAggregator eventAggregator)
         {
             _apiHelper = apiHelper;

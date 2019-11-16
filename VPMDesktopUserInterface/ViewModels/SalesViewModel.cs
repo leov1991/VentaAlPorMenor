@@ -1,13 +1,16 @@
 ﻿using Caliburn.Micro;
 using System.ComponentModel;
+using System.Threading.Tasks;
+using VPMDesktopUI.Library.API;
+using VPMDesktopUI.Library.Models;
 
 namespace VPMDesktopUI.ViewModels
 {
     public class SalesViewModel : Screen
     {
-        private BindingList<string> _products;
+        private BindingList<ProductModel> _products;
 
-        public BindingList<string> Products
+        public BindingList<ProductModel> Products
         {
             get { return _products; }
             set
@@ -31,6 +34,7 @@ namespace VPMDesktopUI.ViewModels
 
 
         private int _itemQuantity;
+        private readonly IProductEndpoint _productEndpoint;
 
         public int ItemQuantity
         {
@@ -52,9 +56,21 @@ namespace VPMDesktopUI.ViewModels
 
         public bool CanCheckout { get; set; } // Comprobar que el carrito no está vacío
 
-        public SalesViewModel()
+        public SalesViewModel(IProductEndpoint productEndpoint)
         {
+            _productEndpoint = productEndpoint;
 
+        }
+
+        protected override async void OnViewLoaded(object view)
+        {
+            await LoadProducts();
+        }
+
+        private async Task LoadProducts()
+        {
+            var products = await _productEndpoint.GetAll();
+            Products = new BindingList<ProductModel>(products);
         }
 
         public void Checkout()

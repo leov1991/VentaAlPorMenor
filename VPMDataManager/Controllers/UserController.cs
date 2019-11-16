@@ -11,7 +11,7 @@ namespace VPMDataManager.Controllers
     [RoutePrefix("api/User")]
     public class UserController : ApiController
     {
-
+        [HttpGet]
         public UserModel GetById()
         {
             string id = RequestContext.Principal.Identity.GetUserId();
