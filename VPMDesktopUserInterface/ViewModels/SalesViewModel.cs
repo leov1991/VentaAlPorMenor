@@ -1,23 +1,27 @@
-﻿using Caliburn.Micro;
+﻿using AutoMapper;
+using Caliburn.Micro;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using VPMDesktopUI.Library.API;
 using VPMDesktopUI.Library.Helpers;
 using VPMDesktopUI.Library.Models;
+using VPMDesktopUI.Models;
 
 namespace VPMDesktopUI.ViewModels
 {
     public class SalesViewModel : Screen
     {
-        private BindingList<ProductModel> _products;
-        private BindingList<CartItemModel> _cart = new BindingList<CartItemModel>();
+        private BindingList<ProductDisplayModel> _products;
+        private BindingList<CartItemDisplayModel> _cart = new BindingList<CartItemDisplayModel>();
         private int _itemQuantity = 1;
         private readonly IProductEndpoint _productEndpoint;
         private readonly IConfigHelper _configHelper;
         private readonly ISaleEndpoint _saleEndpoint;
+        private readonly IMapper _mapper;
 
-        public BindingList<ProductModel> Products
+        public BindingList<ProductDisplayModel> Products
         {
             get { return _products; }
             set
@@ -27,9 +31,9 @@ namespace VPMDesktopUI.ViewModels
             }
         }
 
-        private ProductModel _selectedProduct;
+        private ProductDisplayModel _selectedProduct;
 
-        public ProductModel SelectedProduct
+        public ProductDisplayModel SelectedProduct
         {
             get { return _selectedProduct; }
             set
@@ -40,7 +44,7 @@ namespace VPMDesktopUI.ViewModels
             }
         }
 
-        public BindingList<CartItemModel> Cart
+        public BindingList<CartItemDisplayModel> Cart
         {
             get { return _cart; }
             set
@@ -73,11 +77,13 @@ namespace VPMDesktopUI.ViewModels
 
         public bool CanCheckout => Cart.Count > 0;
 
-        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper, ISaleEndpoint saleEndpoint)
+        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper, ISaleEndpoint saleEndpoint,
+            IMapper mapper)
         {
             _productEndpoint = productEndpoint;
             _configHelper = configHelper;
             _saleEndpoint = saleEndpoint;
+            _mapper = mapper;
         }
 
         protected override async void OnViewLoaded(object view)
@@ -87,8 +93,9 @@ namespace VPMDesktopUI.ViewModels
 
         private async Task LoadProducts()
         {
-            var products = await _productEndpoint.GetAll();
-            Products = new BindingList<ProductModel>(products);
+            var productList = await _productEndpoint.GetAll();
+            var products = _mapper.Map<List<ProductDisplayModel>>(productList);
+            Products = new BindingList<ProductDisplayModel>(products);
         }
 
         private decimal CalculateTax()
@@ -134,19 +141,16 @@ namespace VPMDesktopUI.ViewModels
         public void AddToCart()
         {
             // Si el producto existe en el carrito, actualizar cantidad, si no, crear uno nuevo.
-            CartItemModel existingItem = Cart.FirstOrDefault(i => i.Product == SelectedProduct);
+            CartItemDisplayModel existingItem = Cart.FirstOrDefault(i => i.Product == SelectedProduct);
 
             if (existingItem != null)
             {
                 existingItem.QuantityInCart += ItemQuantity;
-                //// HACK
-                Cart.Remove(existingItem);
-                Cart.Add(existingItem);
 
             }
             else
             {
-                CartItemModel item = new CartItemModel
+                CartItemDisplayModel item = new CartItemDisplayModel
                 {
                     Product = SelectedProduct,
                     QuantityInCart = ItemQuantity

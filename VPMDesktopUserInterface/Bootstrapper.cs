@@ -1,4 +1,5 @@
-﻿using Caliburn.Micro;
+﻿using AutoMapper;
+using Caliburn.Micro;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,7 @@ using VPMDesktopUI.Helpers;
 using VPMDesktopUI.Library.API;
 using VPMDesktopUI.Library.Helpers;
 using VPMDesktopUI.Library.Models;
+using VPMDesktopUI.Models;
 using VPMDesktopUI.ViewModels;
 
 namespace VPMDesktopUI
@@ -29,6 +31,9 @@ namespace VPMDesktopUI
 
         protected override void Configure()
         {
+
+            _container.Instance(ConfigureAutoMapper());
+
             _container.Instance(_container)
                 .PerRequest<ISaleEndpoint, SaleEndpoint>()
                 .PerRequest<IProductEndpoint, ProductEndpoint>();
@@ -49,6 +54,18 @@ namespace VPMDesktopUI
                 .ToList()
                 .ForEach(viewModelType => _container.RegisterPerRequest(
                     viewModelType, viewModelType.ToString(), viewModelType));
+        }
+
+        private static IMapper ConfigureAutoMapper()
+        {
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<ProductModel, ProductDisplayModel>();
+                cfg.CreateMap<CartItemModel, CartItemDisplayModel>();
+            });
+
+            var mapper = config.CreateMapper();
+            return mapper;
         }
 
         protected override void OnStartup(object sender, StartupEventArgs e)
