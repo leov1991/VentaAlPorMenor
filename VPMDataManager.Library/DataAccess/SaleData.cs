@@ -64,7 +64,7 @@ namespace VPMDataManager.Library.DataAccess
                         sql.SaveDataInTransaction("dbo.spSaleDetail_Insert", item);
                     }
 
-                    // Si todo salió bien va a ejecutar el commit al final del using
+                    sql.CommitTransaction();
                 }
                 catch
                 {
