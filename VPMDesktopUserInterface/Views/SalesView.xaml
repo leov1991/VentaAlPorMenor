@@ -29,7 +29,7 @@
 
         <!-- Header -->
         <TextBlock Text="VENTAS" 
-                   FontSize="48"
+                   FontSize="40"
                    Grid.Row="0"
                    Grid.Column="0"
                    Grid.ColumnSpan="3"

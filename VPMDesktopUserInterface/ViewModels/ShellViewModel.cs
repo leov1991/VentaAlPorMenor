@@ -45,6 +45,11 @@ namespace VPMDesktopUI.ViewModels
             TryClose();
         }
 
+        public void UserManagment()
+        {
+            ActivateItem(IoC.Get<UserDisplayViewModel>());
+        }
+
         public void LogOut()
         {
 
