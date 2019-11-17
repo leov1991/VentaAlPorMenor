@@ -148,8 +148,9 @@ namespace VPMDesktopUI.ViewModels
 
             await _saleEndpoint.PostSale(sale);
 
-            Cart.Clear();
-            NotifyChangesInCart();
+            await ResetViewModel();
+
+
 
         }
 
@@ -185,9 +186,9 @@ namespace VPMDesktopUI.ViewModels
 
         public void RemoveFromCart()
         {
-           SelectedCartProduct.Product.QuantityInStock += 1;
+            SelectedCartProduct.Product.QuantityInStock += 1;
 
-            if(SelectedCartProduct.QuantityInCart > 1)
+            if (SelectedCartProduct.QuantityInCart > 1)
             {
                 SelectedCartProduct.QuantityInCart -= 1;
             }
@@ -195,12 +196,19 @@ namespace VPMDesktopUI.ViewModels
             {
                 Cart.Remove(SelectedCartProduct);
             }
-            
-            
+
+            NotifyOfPropertyChange(() => CanAddToCart);
 
             NotifyChangesInCart();
         }
 
+
+        private async Task ResetViewModel()
+        {
+            Cart = new BindingList<CartItemDisplayModel>();
+            await LoadProducts();
+            NotifyChangesInCart();
+        }
         private void NotifyChangesInCart()
         {
             NotifyOfPropertyChange(() => Subtotal);

@@ -10,10 +10,11 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top" FontSize="18">
             <MenuItem Header="_Archivo">
-                
+                <MenuItem x:Name="ExitApplication" Header="_Cerrar" />
             </MenuItem>
-            <MenuItem Header="_Cuenta">
-                <MenuItem x:Name="LoginScreen" Header="_Login" />
+            <MenuItem Header="_Cuenta"
+                      Visibility="{Binding IsLoggedIn, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Collapsed}">
+                <MenuItem x:Name="LogOut" Header="_Logout" />
             </MenuItem>
 
         </Menu>
