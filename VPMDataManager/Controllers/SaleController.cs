@@ -11,6 +11,7 @@ namespace VPMDataManager.Controllers
     {
 
         [HttpPost]
+        [Authorize(Roles = "Cashier")]
         public void Post(SaleModel model)
         {
             SaleData data = new SaleData();
@@ -21,6 +22,7 @@ namespace VPMDataManager.Controllers
 
         [HttpGet]
         [Route("report")]
+        [Authorize(Roles = "Admin,Manager")]
         public List<SaleReportModel> GetSalesReport()
         {
             SaleData data = new SaleData();
