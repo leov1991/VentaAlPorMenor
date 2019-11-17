@@ -54,6 +54,21 @@ namespace VPMDesktopUI.ViewModels
             }
         }
 
+        private CartItemDisplayModel _selectedCartProduct;
+
+        public CartItemDisplayModel SelectedCartProduct
+        {
+            get { return _selectedCartProduct; }
+            set
+            {
+                _selectedCartProduct = value;
+
+                NotifyOfPropertyChange(() => SelectedCartProduct);
+                NotifyOfPropertyChange(() => CanRemoveFromCart);
+            }
+        }
+
+
         public int ItemQuantity
         {
             get { return _itemQuantity; }
@@ -73,7 +88,7 @@ namespace VPMDesktopUI.ViewModels
         public string Total => (CalculateSubtotal() + CalculateTax()).ToString("C");
 
         public bool CanAddToCart => ItemQuantity > 0 && SelectedProduct?.QuantityInStock >= ItemQuantity;
-        public bool CanRemoveFromCart => false;
+        public bool CanRemoveFromCart => SelectedCartProduct != null && SelectedCartProduct.QuantityInCart > 0;
 
         public bool CanCheckout => Cart.Count > 0;
 
@@ -170,6 +185,19 @@ namespace VPMDesktopUI.ViewModels
 
         public void RemoveFromCart()
         {
+           SelectedCartProduct.Product.QuantityInStock += 1;
+
+            if(SelectedCartProduct.QuantityInCart > 1)
+            {
+                SelectedCartProduct.QuantityInCart -= 1;
+            }
+            else
+            {
+                Cart.Remove(SelectedCartProduct);
+            }
+            
+            
+
             NotifyChangesInCart();
         }
 

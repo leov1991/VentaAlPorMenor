@@ -92,7 +92,8 @@
                    Grid.Column="2"/>
         <ListBox x:Name="Cart"
                  Grid.Row="2"
-                 Grid.Column="2"                 
+                 Grid.Column="2"           
+                 SelectedItem="{Binding SelectedCartProduct}"
                  MinHeight="250"
                  MinWidth="100">
             <ListBox.ItemTemplate>
