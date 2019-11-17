@@ -22,7 +22,6 @@ namespace VPMDataManager.Library.DataAccess
                     Quantity = item.Quantity
                 };
 
-
                 var productInfo = products.GetProductById(item.ProductId);
 
                 if (productInfo == null)
@@ -34,7 +33,6 @@ namespace VPMDataManager.Library.DataAccess
                 {
                     detail.Tax = detail.PurchasePrice * taxRate;
                 }
-
 
                 details.Add(detail);
             }
@@ -48,20 +46,35 @@ namespace VPMDataManager.Library.DataAccess
 
             sale.Total = sale.Subtotal + sale.Tax;
 
-            SQLDataAccess sql = new SQLDataAccess();
-
-            sql.SaveData("dbo.spSale_Insert", sale, "VPMData");
-
-            var p = new { sale.CashierId, sale.SaleDate };
-
-            sale.Id = sql.LoadData<int, dynamic>("dbo.spSale_Lookup", p, "VPMData").FirstOrDefault();
-
-            foreach (var item in details)
+            using (SQLDataAccess sql = new SQLDataAccess())
             {
-                item.SaleId = sale.Id;
+                try
+                {
+                    sql.StartTransaction("VPMData");
+                    sql.SaveDataInTransaction("dbo.spSale_Insert", sale);
 
-                sql.SaveData("dbo.spSaleDetail_Insert", item, "VPMData");
+                    var p = new { sale.CashierId, sale.SaleDate };
+
+                    sale.Id = sql.LoadDataInTransaction<int, dynamic>("dbo.spSale_Lookup", p).FirstOrDefault();
+
+                    foreach (var item in details)
+                    {
+                        item.SaleId = sale.Id;
+
+                        sql.SaveDataInTransaction("dbo.spSaleDetail_Insert", item);
+                    }
+
+                    // Si todo salió bien va a ejecutar el commit al final del using
+                }
+                catch
+                {
+                    sql.RollbackTransaction();
+                    throw;
+                }
+
             }
+
+
 
 
         }
