@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
 using Caliburn.Micro;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using VPMDesktopUI.Library.API;
 using VPMDesktopUI.Library.Helpers;
 using VPMDesktopUI.Library.Models;
@@ -20,6 +23,7 @@ namespace VPMDesktopUI.ViewModels
         private readonly IConfigHelper _configHelper;
         private readonly ISaleEndpoint _saleEndpoint;
         private readonly IMapper _mapper;
+        private readonly IWindowManager _window;
 
         public BindingList<ProductDisplayModel> Products
         {
@@ -93,17 +97,42 @@ namespace VPMDesktopUI.ViewModels
         public bool CanCheckout => Cart.Count > 0;
 
         public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper, ISaleEndpoint saleEndpoint,
-            IMapper mapper)
+            IMapper mapper, IWindowManager window)
         {
             _productEndpoint = productEndpoint;
             _configHelper = configHelper;
             _saleEndpoint = saleEndpoint;
             _mapper = mapper;
+            _window = window;
         }
 
         protected override async void OnViewLoaded(object view)
         {
-            await LoadProducts();
+            base.OnViewLoaded(view);
+            try
+            {
+                await LoadProducts();
+            }
+            catch (Exception ex)
+            {
+                dynamic settings = new ExpandoObject();
+                settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                settings.ResizeMode = ResizeMode.NoResize;
+                settings.Title = "Error";
+                var msg = IoC.Get<StatusInfoViewModel>();
+                if (ex.Message == "Unauthorized")
+                {
+                    msg.UpdateMessage("Acceso no autorizado", "No tiene permisos para interactuar con esta vista.");
+                }
+                else
+                {
+                    msg.UpdateMessage("Lista de productos", "Ocurrió un error recuperando la lista de productos.");
+                }
+
+                _window.ShowDialog(msg, null, settings);
+
+                TryClose();
+            }
         }
 
         private async Task LoadProducts()
