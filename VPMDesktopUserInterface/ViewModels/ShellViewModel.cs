@@ -1,5 +1,6 @@
 ﻿using Caliburn.Micro;
 using VPMDesktopUI.EventModels;
+using VPMDesktopUI.Library.API;
 using VPMDesktopUI.Library.Models;
 
 namespace VPMDesktopUI.ViewModels
@@ -9,15 +10,17 @@ namespace VPMDesktopUI.ViewModels
         private readonly IEventAggregator _eventAggregator;
         private readonly SalesViewModel _salesVm;
         private readonly ILoggedInUserModel _user;
-
+        private readonly IAPIHelper _apiHelper;
         private bool _isAccountVisible;
 
         public bool IsLoggedIn => !string.IsNullOrEmpty(_user.Token);
 
-        public ShellViewModel(IEventAggregator eventAggregator, SalesViewModel salesVm, ILoggedInUserModel user)
+        public ShellViewModel(IEventAggregator eventAggregator, SalesViewModel salesVm, ILoggedInUserModel user,
+            IAPIHelper apiHelper)
         {
             _salesVm = salesVm;
             _user = user;
+            _apiHelper = apiHelper;
             _eventAggregator = eventAggregator;
 
             // Para poder usar Handle
@@ -46,7 +49,8 @@ namespace VPMDesktopUI.ViewModels
         public void LogOut()
         {
 
-            _user.LogOffUser();
+            _user.ResetUser();
+            _apiHelper.LogOffUser();
             ActivateItem(IoC.Get<LoginViewModel>());
             NotifyOfPropertyChange(() => IsLoggedIn);
         }

@@ -55,6 +55,10 @@ namespace VPMDesktopUI.Library.API
             }
         }
 
+        public void LogOffUser()
+        {
+            _apiCLient.DefaultRequestHeaders.Clear();
+        }
 
         public async Task GetLoggedInUserInfo(string token)
         {
