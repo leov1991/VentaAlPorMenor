@@ -9,7 +9,7 @@ AS
 BEGIN 
 	SET NOCOUNT ON;
 
-	INSERT INTO Sale (CashierId, SaleDate, Subtotal, Tax, Total) VALUES (@CashierId, @SaleDate, @Subtotal, @Tax, @Total);
+	INSERT INTO Sale (CashierId, SaleDate, SubTotal, Tax, Total) VALUES (@CashierId, @SaleDate, @Subtotal, @Tax, @Total);
 
 	SELECT @Id = @@IDENTITY
 END
