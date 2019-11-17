@@ -2,12 +2,12 @@
 using System.Configuration;
 using System.Globalization;
 
-namespace VPMDesktopUI.Library.Helpers
+namespace VPMDataManager.Library
 {
-    public class ConfigHelper : IConfigHelper
+    public class ConfigHelper
     {
         // TODO: Mover a la API
-        public decimal GetTaxRate()
+        public static decimal GetTaxRate()
         {
             string rateText = ConfigurationManager.AppSettings["taxRate"];
 

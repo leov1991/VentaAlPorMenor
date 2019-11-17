@@ -11,6 +11,11 @@ namespace VPMDesktopUI.ViewModels
     public class SalesViewModel : Screen
     {
         private BindingList<ProductModel> _products;
+        private BindingList<CartItemModel> _cart = new BindingList<CartItemModel>();
+        private int _itemQuantity = 1;
+        private readonly IProductEndpoint _productEndpoint;
+        private readonly IConfigHelper _configHelper;
+        private readonly ISaleEndpoint _saleEndpoint;
 
         public BindingList<ProductModel> Products
         {
@@ -35,9 +40,6 @@ namespace VPMDesktopUI.ViewModels
             }
         }
 
-
-        private BindingList<CartItemModel> _cart = new BindingList<CartItemModel>();
-
         public BindingList<CartItemModel> Cart
         {
             get { return _cart; }
@@ -47,11 +49,6 @@ namespace VPMDesktopUI.ViewModels
                 NotifyOfPropertyChange(() => Cart);
             }
         }
-
-
-        private int _itemQuantity = 1;
-        private readonly IProductEndpoint _productEndpoint;
-        private readonly IConfigHelper _configHelper;
 
         public int ItemQuantity
         {
@@ -65,22 +62,33 @@ namespace VPMDesktopUI.ViewModels
             }
         }
 
-        public string Subtotal
+        public string Subtotal => CalculateSubtotal().ToString("C");
+
+        public string Tax => CalculateTax().ToString("C");
+
+        public string Total => (CalculateSubtotal() + CalculateTax()).ToString("C");
+
+        public bool CanAddToCart => ItemQuantity > 0 && SelectedProduct?.QuantityInStock >= ItemQuantity;
+        public bool CanRemoveFromCart => false;
+
+        public bool CanCheckout => Cart.Count > 0;
+
+        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper, ISaleEndpoint saleEndpoint)
         {
-            get
-            {
-                return CalculateSubtotal().ToString("C");
-            }
+            _productEndpoint = productEndpoint;
+            _configHelper = configHelper;
+            _saleEndpoint = saleEndpoint;
         }
 
-
-
-        public string Tax
+        protected override async void OnViewLoaded(object view)
         {
-            get
-            {
-                return CalculateTax().ToString("C");
-            }
+            await LoadProducts();
+        }
+
+        private async Task LoadProducts()
+        {
+            var products = await _productEndpoint.GetAll();
+            Products = new BindingList<ProductModel>(products);
         }
 
         private decimal CalculateTax()
@@ -95,38 +103,6 @@ namespace VPMDesktopUI.ViewModels
             return taxAmount;
         }
 
-        public string Total
-        {
-            get
-            {
-                decimal total = (CalculateSubtotal() + CalculateTax());
-                return total.ToString("C");
-            }
-        }
-
-        public bool CanAddToCart => ItemQuantity > 0 && SelectedProduct?.QuantityInStock >= ItemQuantity;
-        public bool CanRemoveFromCart => false;
-
-        public bool CanCheckout => false;
-
-        public SalesViewModel(IProductEndpoint productEndpoint, IConfigHelper configHelper)
-        {
-            _productEndpoint = productEndpoint;
-            _configHelper = configHelper;
-        }
-
-        protected override async void OnViewLoaded(object view)
-        {
-            await LoadProducts();
-        }
-
-        private async Task LoadProducts()
-        {
-            var products = await _productEndpoint.GetAll();
-            Products = new BindingList<ProductModel>(products);
-        }
-
-
         private decimal CalculateSubtotal()
         {
             decimal subtotal = 0;
@@ -135,10 +111,26 @@ namespace VPMDesktopUI.ViewModels
 
             return subtotal;
         }
-        public void Checkout()
+
+        public async Task Checkout()
         {
+            SaleModel sale = new SaleModel();
+            foreach (var item in Cart)
+            {
+                sale.SaleDetails.Add(new SaleDetailModel
+                {
+                    ProductId = item.Product.Id,
+                    Quantity = item.QuantityInCart
+                });
+            }
+
+            await _saleEndpoint.PostSale(sale);
+
+            Cart.Clear();
+            NotifyChangesInCart();
 
         }
+
         public void AddToCart()
         {
             // Si el producto existe en el carrito, actualizar cantidad, si no, crear uno nuevo.
@@ -166,22 +158,23 @@ namespace VPMDesktopUI.ViewModels
 
             SelectedProduct.QuantityInStock -= ItemQuantity;
             ItemQuantity = 1;
-            NotifyOfPropertyChange(() => Subtotal);
-            NotifyOfPropertyChange(() => Tax);
-            NotifyOfPropertyChange(() => Total);
+
+            NotifyChangesInCart();
 
 
         }
 
         public void RemoveFromCart()
         {
+            NotifyChangesInCart();
+        }
 
+        private void NotifyChangesInCart()
+        {
             NotifyOfPropertyChange(() => Subtotal);
             NotifyOfPropertyChange(() => Tax);
             NotifyOfPropertyChange(() => Total);
+            NotifyOfPropertyChange(() => CanCheckout);
         }
-
-
-
     }
 }
