@@ -11,7 +11,6 @@ namespace VPMDesktopUI.ViewModels
         private readonly SalesViewModel _salesVm;
         private readonly ILoggedInUserModel _user;
         private readonly IAPIHelper _apiHelper;
-        private bool _isAccountVisible;
 
         public bool IsLoggedIn => !string.IsNullOrEmpty(_user.Token);
 
