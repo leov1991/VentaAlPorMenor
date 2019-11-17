@@ -79,13 +79,14 @@ namespace VPMDataManager.Library.DataAccess
 
         }
 
-        //public List<ProductModel> GetProducts()
-        //{
+        public List<SaleReportModel> GetSalesReport()
+        {
+            SQLDataAccess sql = new SQLDataAccess();
 
+            var output = sql.LoadData<SaleReportModel, dynamic>("[dbo].[spSale_SaleReport]", new { }, "VPMData");
 
-        //    var output = sql.LoadData<ProductModel, dynamic>("[dbo].[spProduct_GetAll]", new { }, "VPMData");
+            return output;
+        }
 
-        //    return output;
-        //}
     }
 }
