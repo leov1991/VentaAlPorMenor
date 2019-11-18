@@ -8,6 +8,7 @@ namespace VPMDesktopUI.Library.API
 {
     public class ProductEndpoint : IProductEndpoint
     {
+        private const string baseEndpoint = "/api/product";
         private readonly IAPIHelper _apiHelper;
 
         public ProductEndpoint(IAPIHelper apiHelper)
@@ -17,7 +18,7 @@ namespace VPMDesktopUI.Library.API
 
         public async Task<List<ProductModel>> GetAll()
         {
-            using (HttpResponseMessage response = await _apiHelper.ApiClient.GetAsync("/api/Product"))
+            using (HttpResponseMessage response = await _apiHelper.ApiClient.GetAsync(baseEndpoint))
             {
                 if (response.IsSuccessStatusCode)
                 {

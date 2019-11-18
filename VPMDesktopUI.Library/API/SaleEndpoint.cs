@@ -7,6 +7,7 @@ namespace VPMDesktopUI.Library.API
 {
     public class SaleEndpoint : ISaleEndpoint
     {
+        private const string baseEndpoint = "/api/sale";
         private readonly IAPIHelper _apiHelper;
 
         public SaleEndpoint(IAPIHelper apiHelper)
@@ -16,7 +17,7 @@ namespace VPMDesktopUI.Library.API
 
         public async Task PostSale(SaleModel sale)
         {
-            using (HttpResponseMessage response = await _apiHelper.ApiClient.PostAsJsonAsync("/api/Sale", sale))
+            using (HttpResponseMessage response = await _apiHelper.ApiClient.PostAsJsonAsync(baseEndpoint, sale))
             {
                 if (response.IsSuccessStatusCode)
                 {

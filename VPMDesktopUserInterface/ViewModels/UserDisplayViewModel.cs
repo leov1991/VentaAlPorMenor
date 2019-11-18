@@ -1,8 +1,8 @@
 ﻿using Caliburn.Micro;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Dynamic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using VPMDesktopUI.Library.API;
@@ -28,7 +28,87 @@ namespace VPMDesktopUI.ViewModels
             }
         }
 
+        private UserModel _selectedUser;
 
+        public UserModel SelectedUser
+        {
+            get { return _selectedUser; }
+            set
+            {
+                _selectedUser = value;
+                SelectedUserName = value.Email;
+
+                SelectedUserRoles.Clear();
+                SelectedUserRoles = new BindingList<string>(value.Roles.Select(x => x.Value).ToList());
+                LoadRoles();
+
+                NotifyOfPropertyChange(() => SelectedUser);
+            }
+        }
+
+        private string _selectedUserName;
+
+        public string SelectedUserName
+        {
+            get { return _selectedUserName; }
+            set
+            {
+                _selectedUserName = value;
+                NotifyOfPropertyChange(() => SelectedUserName);
+            }
+        }
+
+        private BindingList<string> _selectedUserRoles = new BindingList<string>();
+
+        public BindingList<string> SelectedUserRoles
+        {
+            get { return _selectedUserRoles; }
+            set
+            {
+                _selectedUserRoles = value;
+                NotifyOfPropertyChange(() => SelectedUserRoles);
+            }
+        }
+
+        private BindingList<string> _availableRoles = new BindingList<string>();
+
+        public BindingList<string> AvailableRoles
+        {
+            get { return _availableRoles; }
+            set
+            {
+                _availableRoles = value;
+                NotifyOfPropertyChange(() => AvailableRoles);
+            }
+        }
+
+        private string _selectedRoleToRemove;
+
+        public string SelectedRoleToRemove
+        {
+            get { return _selectedRoleToRemove; }
+            set
+            {
+                _selectedRoleToRemove = value;
+                NotifyOfPropertyChange(() => SelectedRoleToRemove);
+            }
+        }
+
+        private string _selectedRoleToAdd;
+
+        public string SelectedRoleToAdd
+        {
+            get { return _selectedRoleToAdd; }
+            set
+            {
+                _selectedRoleToAdd = value;
+                NotifyOfPropertyChange(() => SelectedRoleToAdd);
+            }
+        }
+
+
+        //public bool CanRemoveFromRole => true;
+        //public bool CanAddToRole => true;
         public UserDisplayViewModel(IUserEndpoint userEndpoint, IWindowManager window)
         {
             _userEndpoint = userEndpoint;
@@ -70,5 +150,35 @@ namespace VPMDesktopUI.ViewModels
 
         }
 
+        private async Task LoadRoles()
+        {
+            AvailableRoles.Clear();
+            var roleList = await _userEndpoint.GetAllRoles();
+
+            foreach (var role in roleList)
+            {
+                if (SelectedUserRoles.IndexOf(role.Value) < 0)
+                {
+                    AvailableRoles.Add(role.Value);
+                }
+
+            }
+
+
+        }
+
+        public async void AddToRole()
+        {
+            await _userEndpoint.AddUserToRole(SelectedUser.Id, SelectedRoleToAdd);
+            SelectedUserRoles.Add(SelectedRoleToAdd);
+            AvailableRoles.Remove(SelectedRoleToAdd);
+        }
+
+        public async void RemoveFromRole()
+        {
+            await _userEndpoint.RemoveUserFromRole(SelectedUser.Id, SelectedRoleToRemove);
+            AvailableRoles.Add(SelectedRoleToRemove);
+            SelectedUserRoles.Remove(SelectedRoleToRemove);
+        }
     }
 }

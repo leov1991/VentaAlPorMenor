@@ -61,5 +61,54 @@ namespace VPMDataManager.Controllers
 
         }
 
+
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        [Route("admin/roles")]
+
+        public Dictionary<string, string> GetAllRoles()
+        {
+
+            using (var context = new ApplicationDbContext())
+            {
+
+                var roles = context.Roles.ToDictionary(x => x.Id, x => x.Name);
+
+                return roles;
+
+
+            }
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [Route("admin/addToRole")]
+        public void AddToRole(UserRolePairModel pair)
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                var userStore = new UserStore<ApplicationUser>(context);
+                var userManager = new UserManager<ApplicationUser>(userStore);
+
+                userManager.AddToRole(pair.UserId, pair.RoleName);
+
+            }
+
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [Route("admin/removeFromRole")]
+        public void RemoveToRole(UserRolePairModel pair)
+        {
+            using (var context = new ApplicationDbContext())
+            {
+                var userStore = new UserStore<ApplicationUser>(context);
+                var userManager = new UserManager<ApplicationUser>(userStore);
+
+                userManager.RemoveFromRole(pair.UserId, pair.RoleName);
+
+            }
+        }
     }
 }

@@ -5,7 +5,7 @@ using VPMDataManager.Library.Models;
 
 namespace VPMDataManager.Controllers
 {
-    [Authorize(Roles ="Cashier")]
+    [Authorize(Roles ="Cajero")]
     [RoutePrefix("api/Product")]
     public class ProductController : ApiController
     {
