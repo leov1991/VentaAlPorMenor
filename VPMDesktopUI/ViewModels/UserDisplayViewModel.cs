@@ -137,9 +137,9 @@ namespace VPMDesktopUI.ViewModels
                     msg.UpdateMessage("Lista de productos", "Ocurrió un error recuperando la lista de productos.");
                 }
 
-                _window.ShowDialog(msg, null, settings);
+                await _window.ShowDialogAsync(msg, null, settings);
 
-                TryClose();
+                await TryCloseAsync();
             }
         }
 

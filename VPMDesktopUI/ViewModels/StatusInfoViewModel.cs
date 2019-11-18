@@ -1,4 +1,5 @@
 ﻿using Caliburn.Micro;
+using System.Threading.Tasks;
 
 namespace VPMDesktopUI.ViewModels
 {
@@ -17,9 +18,9 @@ namespace VPMDesktopUI.ViewModels
 
         }
 
-        public void Close()
+        public async Task Close()
         {
-            TryClose();
+            await TryCloseAsync();
         }
     }
 }

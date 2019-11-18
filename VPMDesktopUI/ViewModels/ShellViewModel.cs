@@ -1,4 +1,6 @@
 ﻿using Caliburn.Micro;
+using System.Threading;
+using System.Threading.Tasks;
 using VPMDesktopUI.EventModels;
 using VPMDesktopUI.Library.API;
 using VPMDesktopUI.Library.Models;
@@ -23,10 +25,29 @@ namespace VPMDesktopUI.ViewModels
             _eventAggregator = eventAggregator;
 
             // Para poder usar Handle
-            _eventAggregator.Subscribe(this);
+            _eventAggregator.SubscribeOnPublishedThread(this);
 
             // Iniciar pantalla de Login
-            ActivateItem(IoC.Get<LoginViewModel>());
+            ActivateItemAsync(IoC.Get<LoginViewModel>(), new CancellationToken());
+        }
+
+        public async Task ExitApplication()
+        {
+            await TryCloseAsync();
+        }
+
+        public async Task UserManagment()
+        {
+            await ActivateItemAsync(IoC.Get<UserDisplayViewModel>(), new CancellationToken());
+        }
+
+        public async Task LogOut()
+        {
+
+            _user.ResetUser();
+            _apiHelper.LogOffUser();
+            await ActivateItemAsync(IoC.Get<LoginViewModel>(), new CancellationToken());
+            NotifyOfPropertyChange(() => IsLoggedIn);
         }
 
         /// <summary>
@@ -34,28 +55,12 @@ namespace VPMDesktopUI.ViewModels
         /// y abre la de ventas
         /// </summary>
         /// <param name="message"></param>
-        public void Handle(LogOnEvent message)
-        {
-            ActivateItem(_salesVm);
-            NotifyOfPropertyChange(() => IsLoggedIn);
-        }
-
-        public void ExitApplication()
-        {
-            TryClose();
-        }
-
-        public void UserManagment()
-        {
-            ActivateItem(IoC.Get<UserDisplayViewModel>());
-        }
-
-        public void LogOut()
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task HandleAsync(LogOnEvent message, CancellationToken cancellationToken)
         {
 
-            _user.ResetUser();
-            _apiHelper.LogOffUser();
-            ActivateItem(IoC.Get<LoginViewModel>());
+            await ActivateItemAsync(_salesVm, cancellationToken);
             NotifyOfPropertyChange(() => IsLoggedIn);
         }
     }

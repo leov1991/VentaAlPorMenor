@@ -66,7 +66,7 @@ namespace VPMDesktopUI.ViewModels
                 var result = await _apiHelper.Authenticate(Username, Password);
                 await _apiHelper.GetLoggedInUserInfo(result.Access_Token);
 
-                _eventAggregator.PublishOnUIThread(new LogOnEvent());
+                await _eventAggregator.PublishOnUIThreadAsync(new LogOnEvent());
 
             }
             catch (Exception ex)
