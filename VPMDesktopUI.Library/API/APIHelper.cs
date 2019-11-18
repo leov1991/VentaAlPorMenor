@@ -67,7 +67,7 @@ namespace VPMDesktopUI.Library.API
             _apiCLient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             _apiCLient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
 
-            using (HttpResponseMessage response = await _apiCLient.GetAsync("/api/User/GetUserById"))
+            using (HttpResponseMessage response = await _apiCLient.GetAsync("/api/user"))
             {
                 if (response.IsSuccessStatusCode)
                 {
