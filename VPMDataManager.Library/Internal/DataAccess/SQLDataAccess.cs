@@ -1,7 +1,7 @@
 ﻿using Dapper;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -10,14 +10,16 @@ namespace VPMDataManager.Library.Internal.DataAccess
 {
     internal class SQLDataAccess : IDisposable
     {
-        public string GetConnectionString(string name)
+
+        public SQLDataAccess(IConfiguration config)
         {
-            return ConfigurationManager.ConnectionStrings[name].ConnectionString;
+            _config = config;
         }
+
 
         public List<T> LoadData<T, U>(string storedProcedure, U parameters, string connectionStringName)
         {
-            string connectionString = GetConnectionString(connectionStringName);
+            string connectionString = _config.GetConnectionString(connectionStringName);
 
             using (IDbConnection conn = new SqlConnection(connectionString))
             {
@@ -31,7 +33,7 @@ namespace VPMDataManager.Library.Internal.DataAccess
 
         public void SaveData<T>(string storedProcedure, T parameters, string connectionStringName)
         {
-            string connectionString = GetConnectionString(connectionStringName);
+            string connectionString = _config.GetConnectionString(connectionStringName);
 
             using (IDbConnection conn = new SqlConnection(connectionString))
             {
@@ -45,7 +47,7 @@ namespace VPMDataManager.Library.Internal.DataAccess
         private IDbTransaction _transaction;
         public void StartTransaction(string connectionStringName)
         {
-            string connectionString = GetConnectionString(connectionStringName);
+            string connectionString = _config.GetConnectionString(connectionStringName);
             _connection = new SqlConnection(connectionString);
             _connection.Open();
             _transaction = _connection.BeginTransaction();
@@ -71,6 +73,7 @@ namespace VPMDataManager.Library.Internal.DataAccess
         }
 
         private bool isClosed = false;
+        private readonly IConfiguration _config;
 
         public void CommitTransaction()
         {

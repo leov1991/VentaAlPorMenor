@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 using VPMDataManager.Library.Internal.DataAccess;
 using VPMDataManager.Library.Models;
 
@@ -6,9 +7,15 @@ namespace VPMDataManager.Library.DataAccess
 {
     public class UserData
     {
+        private readonly IConfiguration _config;
+
+        public UserData(IConfiguration config)
+        {
+            _config = config;
+        }
         public List<UserModel> GetUserById(string id)
         {
-            SQLDataAccess sql = new SQLDataAccess();
+            SQLDataAccess sql = new SQLDataAccess(_config);
 
             var p = new { Id = id };
 

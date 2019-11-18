@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 using System.Linq;
 using VPMDataManager.Library.Internal.DataAccess;
 using VPMDataManager.Library.Models;
@@ -7,12 +8,17 @@ namespace VPMDataManager.Library.DataAccess
 {
     public class SaleData
     {
+        private readonly IConfiguration _config;
 
+        public SaleData(IConfiguration config)
+        {
+            _config = config;
+        }
         public void SaveSale(SaleModel saleInfo, string cashierId)
         {
 
             List<SaleDetailDbModel> details = new List<SaleDetailDbModel>();
-            ProductData products = new ProductData();
+            ProductData products = new ProductData(_config);
             var taxRate = ConfigHelper.GetTaxRate() / 100;
             foreach (var item in saleInfo.SaleDetails)
             {
@@ -46,7 +52,7 @@ namespace VPMDataManager.Library.DataAccess
 
             sale.Total = sale.Subtotal + sale.Tax;
 
-            using (SQLDataAccess sql = new SQLDataAccess())
+            using (SQLDataAccess sql = new SQLDataAccess(_config))
             {
                 try
                 {
@@ -81,7 +87,7 @@ namespace VPMDataManager.Library.DataAccess
 
         public List<SaleReportModel> GetSalesReport()
         {
-            SQLDataAccess sql = new SQLDataAccess();
+            SQLDataAccess sql = new SQLDataAccess(_config);
 
             var output = sql.LoadData<SaleReportModel, dynamic>("[dbo].[spSale_SaleReport]", new { }, "VPMData");
 
