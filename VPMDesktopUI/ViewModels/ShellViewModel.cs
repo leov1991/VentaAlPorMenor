@@ -9,17 +9,15 @@ namespace VPMDesktopUI.ViewModels
 {
     public class ShellViewModel : Conductor<object>, IHandle<LogOnEvent>
     {
-        private readonly IEventAggregator _eventAggregator;
-        private readonly SalesViewModel _salesVm;
+        private readonly IEventAggregator _eventAggregator;        
         private readonly ILoggedInUserModel _user;
         private readonly IAPIHelper _apiHelper;
 
         public bool IsLoggedIn => !string.IsNullOrEmpty(_user.Token);
 
-        public ShellViewModel(IEventAggregator eventAggregator, SalesViewModel salesVm, ILoggedInUserModel user,
+        public ShellViewModel(IEventAggregator eventAggregator, ILoggedInUserModel user,
             IAPIHelper apiHelper)
-        {
-            _salesVm = salesVm;
+        {            
             _user = user;
             _apiHelper = apiHelper;
             _eventAggregator = eventAggregator;
@@ -60,7 +58,7 @@ namespace VPMDesktopUI.ViewModels
         public async Task HandleAsync(LogOnEvent message, CancellationToken cancellationToken)
         {
 
-            await ActivateItemAsync(_salesVm, cancellationToken);
+            await ActivateItemAsync(IoC.Get<SalesViewModel>(), cancellationToken);
             NotifyOfPropertyChange(() => IsLoggedIn);
         }
     }
