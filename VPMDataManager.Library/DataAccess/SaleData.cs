@@ -6,19 +6,21 @@ using VPMDataManager.Library.Models;
 
 namespace VPMDataManager.Library.DataAccess
 {
-    public class SaleData
+    public class SaleData : ISaleData
     {
-        private readonly IConfiguration _config;
+        private readonly IProductData _productData;
+        private readonly ISQLDataAccess _sql;
 
-        public SaleData(IConfiguration config)
+        public SaleData(IProductData productData, ISQLDataAccess sql)
         {
-            _config = config;
+
+            _productData = productData;
+            _sql = sql;
         }
         public void SaveSale(SaleModel saleInfo, string cashierId)
         {
 
             List<SaleDetailDbModel> details = new List<SaleDetailDbModel>();
-            ProductData products = new ProductData(_config);
             var taxRate = ConfigHelper.GetTaxRate() / 100;
             foreach (var item in saleInfo.SaleDetails)
             {
@@ -28,7 +30,7 @@ namespace VPMDataManager.Library.DataAccess
                     Quantity = item.Quantity
                 };
 
-                var productInfo = products.GetProductById(item.ProductId);
+                var productInfo = _productData.GetProductById(item.ProductId);
 
                 if (productInfo == null)
                     throw new System.Exception($"El producto con Id {item.ProductId} no se encuentra en la base de datos.");
@@ -52,33 +54,32 @@ namespace VPMDataManager.Library.DataAccess
 
             sale.Total = sale.Subtotal + sale.Tax;
 
-            using (SQLDataAccess sql = new SQLDataAccess(_config))
+
+            try
             {
-                try
+                _sql.StartTransaction("VPMData");
+                _sql.SaveDataInTransaction("dbo.spSale_Insert", sale);
+
+                var p = new { sale.CashierId, sale.SaleDate };
+
+                sale.Id = _sql.LoadDataInTransaction<int, dynamic>("dbo.spSale_Lookup", p).FirstOrDefault();
+
+                foreach (var item in details)
                 {
-                    sql.StartTransaction("VPMData");
-                    sql.SaveDataInTransaction("dbo.spSale_Insert", sale);
+                    item.SaleId = sale.Id;
 
-                    var p = new { sale.CashierId, sale.SaleDate };
-
-                    sale.Id = sql.LoadDataInTransaction<int, dynamic>("dbo.spSale_Lookup", p).FirstOrDefault();
-
-                    foreach (var item in details)
-                    {
-                        item.SaleId = sale.Id;
-
-                        sql.SaveDataInTransaction("dbo.spSaleDetail_Insert", item);
-                    }
-
-                    sql.CommitTransaction();
-                }
-                catch
-                {
-                    sql.RollbackTransaction();
-                    throw;
+                    _sql.SaveDataInTransaction("dbo.spSaleDetail_Insert", item);
                 }
 
+                _sql.CommitTransaction();
             }
+            catch
+            {
+                _sql.RollbackTransaction();
+                throw;
+            }
+
+
 
 
 
@@ -87,9 +88,7 @@ namespace VPMDataManager.Library.DataAccess
 
         public List<SaleReportModel> GetSalesReport()
         {
-            SQLDataAccess sql = new SQLDataAccess(_config);
-
-            var output = sql.LoadData<SaleReportModel, dynamic>("[dbo].[spSale_SaleReport]", new { }, "VPMData");
+            var output = _sql.LoadData<SaleReportModel, dynamic>("[dbo].[spSale_SaleReport]", new { }, "VPMData");
 
             return output;
         }

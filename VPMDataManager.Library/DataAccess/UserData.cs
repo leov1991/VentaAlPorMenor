@@ -5,21 +5,17 @@ using VPMDataManager.Library.Models;
 
 namespace VPMDataManager.Library.DataAccess
 {
-    public class UserData
+    public class UserData : IUserData
     {
-        private readonly IConfiguration _config;
+        private readonly ISQLDataAccess _sql;
 
-        public UserData(IConfiguration config)
+        public UserData(IConfiguration config, ISQLDataAccess sql)
         {
-            _config = config;
+            _sql = sql;
         }
         public List<UserModel> GetUserById(string id)
         {
-            SQLDataAccess sql = new SQLDataAccess(_config);
-
-            var p = new { Id = id };
-
-            var output = sql.LoadData<UserModel, dynamic>("[dbo].[spUserLookup]", p, "VPMData");
+            var output = _sql.LoadData<UserModel, dynamic>("[dbo].[spUserLookup]", new { Id = id }, "VPMData");
 
             return output;
         }

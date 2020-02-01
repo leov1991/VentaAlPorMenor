@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace VPMDataManager.Library.Internal.DataAccess
 {
-    internal class SQLDataAccess : IDisposable
+    public class SQLDataAccess : IDisposable, ISQLDataAccess
     {
 
         public SQLDataAccess(IConfiguration config)

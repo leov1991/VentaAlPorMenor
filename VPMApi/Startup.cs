@@ -10,6 +10,8 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Text;
 using VPMApi.Data;
+using VPMDataManager.Library.DataAccess;
+using VPMDataManager.Library.Internal.DataAccess;
 
 namespace VPMApi
 {
@@ -34,6 +36,13 @@ namespace VPMApi
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            services.AddTransient<ISQLDataAccess, SQLDataAccess>();
+            services.AddTransient<IInventoryData, InventoryData>();
+            services.AddTransient<IProductData, ProductData>();
+            services.AddTransient<ISaleData, SaleData>();
+            services.AddTransient<IUserData, UserData>();
+            
 
             services.AddAuthentication(options =>
             {

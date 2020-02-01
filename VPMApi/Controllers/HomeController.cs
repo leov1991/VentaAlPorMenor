@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 using VPMApi.Models;
 
 namespace VPMApi.Controllers
@@ -17,31 +19,36 @@ namespace VPMApi.Controllers
             _logger = logger;
             _roleManager = roleManager;
             _userManager = userManager;
+
+            
         }
 
         public IActionResult Index()
         {
+            var test =_userManager.Users.FirstOrDefault();
+           // _userManager.DeleteAsync(test);
+
             return View();
         }
 
-        public IActionResult Privacy()
+        public async Task<IActionResult> Privacy()
         {
-            //// Crear roles
-            //string[] roles = { "Admin", "Supervisor", "Cajero" };
-            //foreach (var role in roles)
-            //{
-            //    var roleExist = await _roleManager.RoleExistsAsync(role);
-            //    if (!roleExist)
-            //        await _roleManager.CreateAsync(new IdentityRole(role));
-            //}
+            // Crear roles
+            string[] roles = { "Admin", "Supervisor", "Cajero" };
+            foreach (var role in roles)
+            {
+                var roleExist = await _roleManager.RoleExistsAsync(role);
+                if (!roleExist)
+                    await _roleManager.CreateAsync(new IdentityRole(role));
+            }
 
-            //var user = await _userManager.FindByEmailAsync("leovilla91@gmail.com");
+            var user = await _userManager.FindByEmailAsync("leovilla91@gmail.com");
 
-            //if (user != null)
-            //{
-            //    await _userManager.AddToRoleAsync(user, "Admin");
-            //    await _userManager.AddToRoleAsync(user, "Cajero");
-            //}
+            if (user != null)
+            {
+                await _userManager.AddToRoleAsync(user, "Admin");
+                await _userManager.AddToRoleAsync(user, "Cajero");
+            }
 
             return View();
         }

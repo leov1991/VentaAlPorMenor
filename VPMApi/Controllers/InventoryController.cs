@@ -11,29 +11,26 @@ namespace VPMApi.Controllers
     [ApiController]
     [Authorize]
     public class InventoryController : ControllerBase
-    {
-        private readonly IConfiguration _config;
+    {        
+        private readonly IInventoryData _inventory;
 
-        public InventoryController(IConfiguration config)
-        {
-            _config = config;
+        public InventoryController(IInventoryData inventory)
+        {     
+            _inventory = inventory;
         }
 
         [Authorize(Roles = "Manager,Admin")]
         [HttpGet]
         public List<InventoryModel> Get()
         {
-            InventoryData data = new InventoryData(_config);
-
-            return data.GetInventory();
+            return _inventory.GetInventory();
         }
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public void Post(InventoryModel item)
         {
-            InventoryData data = new InventoryData(_config);
-            data.SaveInventoryRecord(item);
+            _inventory.SaveInventoryRecord(item);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace VPMDesktopUI.ViewModels
     public class LoginViewModel : Screen
     {
         private string _username = "leovilla91@gmail.com";
-        private string _password = "Pass.123";
+        private string _password = "Pass.1234";
         private string _errorMessage;
         private readonly IAPIHelper _apiHelper;
         private readonly IEventAggregator _eventAggregator;
