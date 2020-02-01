@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -21,13 +22,14 @@ namespace VPMApi.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IUserData _userData;
-        
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(ApplicationDbContext context, UserManager<IdentityUser> userManager, IUserData userData)
+        public UserController(ApplicationDbContext context, UserManager<IdentityUser> userManager, IUserData userData, ILogger<UserController> logger)
         {
             _context = context;
             _userManager = userManager;
-            _userData = userData;            
+            _userData = userData;
+            _logger = logger;
         }
 
 
@@ -89,7 +91,13 @@ namespace VPMApi.Controllers
         [Route("admin/addToRole")]
         public async Task AddToRole(UserRolePairModel pair)
         {
+            string loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var user = await _userManager.FindByIdAsync(pair.UserId);
+
+            // Do not use string interpolation in loggers. This way is correct
+            _logger.LogInformation("Admin {} agregó al usuario {User} al rol {Role}", loggedInUserId, user.Id, pair.RoleName);
+
             await _userManager.AddToRoleAsync(user, pair.RoleName);
         }
 
@@ -98,7 +106,13 @@ namespace VPMApi.Controllers
         [Route("admin/removeFromRole")]
         public async Task RemoveToRole(UserRolePairModel pair)
         {
+
+            string loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
             var user = await _userManager.FindByIdAsync(pair.UserId);
+            
+            _logger.LogInformation("Admin {} quitó al usuario {User} del rol {Role}", loggedInUserId, user.Id, pair.RoleName);
+            
             await _userManager.RemoveFromRoleAsync(user, pair.RoleName);
 
         }

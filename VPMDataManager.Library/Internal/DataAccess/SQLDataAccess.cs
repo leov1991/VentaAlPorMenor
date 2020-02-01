@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -11,9 +12,10 @@ namespace VPMDataManager.Library.Internal.DataAccess
     public class SQLDataAccess : IDisposable, ISQLDataAccess
     {
 
-        public SQLDataAccess(IConfiguration config)
+        public SQLDataAccess(IConfiguration config, ILogger<SQLDataAccess> logger )
         {
             _config = config;
+            _logger = logger;
         }
 
 
@@ -74,6 +76,7 @@ namespace VPMDataManager.Library.Internal.DataAccess
 
         private bool isClosed = false;
         private readonly IConfiguration _config;
+        private readonly ILogger<SQLDataAccess> _logger;
 
         public void CommitTransaction()
         {
@@ -98,9 +101,9 @@ namespace VPMDataManager.Library.Internal.DataAccess
                 {
                     CommitTransaction();
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // Log error
+                    _logger.LogError(ex, "CommitTransaction falló en el método Dispose.");
                 }
             }
 
